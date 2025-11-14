@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quiz: La Escuela de Atenas</title>
+<style>
+
+  :root{
+    --fondo: #fff7fb;
+    --card: #ffffff;
+    --rosa-claro: #ffd6e8;
+    --rosa-medio: #ffb3cf;
+    --lavanda: #d9ccff;
+    --celeste: #d8f0ff;
+    --acento: #c66ca6; 
+    --acento-oscuro: #9e3f77;
+    --detalle: #f2d1ff;
+    --texto: #22252a;
+    --gris: #6f6f78;
+    --radio: 16px;
+    --sombra: 0 10px 30px rgba(34,37,42,0.08);
+    --trans: 0.18s;
+  }.imagen {
+    width: 100%;
+    max-width: 100%;
+    max-height: 320px;      /* Puedes ajustar */
+    object-fit: contain;    /* NO recorta la imagen */
+    display: block;
+    margin: 12px auto;
+    border-radius: 12px;
+    background: #fff;
+}
+
+
+  * { box-sizing: border-box; }
+  html,body { height:100%; margin:0; font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif; background: linear-gradient(180deg,var(--fondo), #fff0f7); color:var(--texto); }
+
+  .contenedor-centro{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+
+  .tarjeta {
+    width:100%;
+    max-width:960px;
+    background: linear-gradient(180deg, var(--card), #fff);
+    border-radius:var(--radio);
+    padding:28px;
+    box-shadow: var(--sombra);
+    border: 1px solid rgba(198,108,166,0.06);
+  }
+
+  h1 { margin:0 0 8px 0; font-size:28px; color:var(--acento-oscuro); }
+  h2 { margin:0 0 6px 0; font-size:20px; color:var(--texto); }
+  p { margin:6px 0 12px 0; color:var(--gris); line-height:1.4; }
+
+  .fila { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .derecha { margin-left:auto; }
+
+  .boton-principal {
+    background: linear-gradient(90deg,var(--acento), var(--acento-oscuro));
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:12px;
+    font-size:15px;
+    cursor:pointer;
+    transition: transform var(--trans), box-shadow var(--trans);
+    box-shadow: 0 6px 18px rgba(198,108,166,0.14);
+  }
+  .boton-principal:hover { transform: translateY(-3px); }
+
+  .boton-opcion {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(160,160,170,0.12);
+    background: linear-gradient(180deg,#fff,#fff9fb);
+    cursor:pointer;
+    text-align:left;
+    font-size:15px;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    width:100%;
+  }
+  .boton-opcion:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(200,160,200,0.06); }
+  .boton-opcion[disabled] { opacity:0.6; cursor:default; transform:none; }
+  .letra-op { font-weight:700; color:var(--acento-oscuro); width:28px; display:inline-block; }
+
+  .imagen {
+    width: 100%;
+    max-width: 100%;
+    max-height: 320px;      /* Puedes ajustar */
+    object-fit: contain;    /* NO recorta la imagen */
+    display: block;
+    margin: 12px auto;
+    border-radius: 12px;
+    background: #fff;
+}
+
+
+  .oculto { display:none; }
+
+  .retro-correcto { background: linear-gradient(90deg,#f0fffb,#f7fff8); border-left:6px solid #2ecc71; padding:14px; border-radius:10px; color:#1f5a43; }
+  .retro-error { background: linear-gradient(90deg,#fff6f6,#fff9f9); border-left:6px solid #ff6b6b; padding:14px; border-radius:10px; color:#8a2b2b; }
+
+  .info-peq { font-size:13px; color:var(--gris); }
+  .barra-progreso { height:10px; background:linear-gradient(90deg,#fff,#fff); border-radius:999px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); margin:8px 0; }
+  .barra-llenado { height:100%; width:0%; background: linear-gradient(90deg, #ffbfdc, #e6b0ff); transition: width .45s ease; }
+
+  .cont-opciones { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
+  @media (max-width:720px){ .cont-opciones { grid-template-columns: 1fr; } }
+
+  .cabecera-peq { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .tag { background: var(--lavanda); padding:6px 10px; border-radius:10px; color:var(--acento-oscuro); font-weight:600; }
+
+  .boton-siguiente {
+    background: none;
+    border: 2px solid var(--acento-oscuro);
+    color: var(--acento-oscuro);
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .boton-siguiente:hover { background:var(--detalle); }
+
+  footer { margin-top:14px; font-size:13px; color:var(--gris); text-align:center; }
+
+  .detalle-autor { font-size:13px; color:var(--gris); margin-top:6px; }
+
+</style>
+</head>
+<body>
+  <div class="contenedor-centro">
+    <div class="tarjeta" id="pantalla-portada">
+      <div class="cabecera-peq">
+        <h1>La Escuela de Atenas — Quiz Filosófico</h1>
+        <div class="tag">10 preguntas / partida</div>
+      </div>
+      <p>Realizado por <strong>Mayuri Dayana Calvo Vargas</strong> — Curso: <strong>1101</strong></p>
+      <p>Este es un Quiz de la escuela de atenas realizado para la recuperacion de Filosofia; pulsa <strong>Istrucciones</strong> para saber como jugar. Pulsa <strong>Siguiente</strong> cuando estes listo</p>
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button class="boton-principal" onclick="iniciarJuego()">Comenzar el juego</button>
+        <button class="boton-siguiente" onclick="mostrarInstrucciones()">Instrucciones</button>
+      </div>
+      <footer>Trabajo de recuperacion de la materia Filosofia</footer>
+    </div>
+
+    <div class="tarjeta oculto" id="pantalla-juego">
+      <div class="cabecera-peq">
+        <div>
+          <h2 id="texto-pregunta">Pregunta</h2>
+          <div class="detalle-autor" id="contador">Pregunta 1 / 10 · Puntaje: 0</div>
+        </div>
+        <div style="min-width:240px; text-align:right;">
+          <div class="barra-progreso" aria-hidden><div id="barra" class="barra-llenado"></div></div>
+          <div class="info-peq" id="avance">0%</div>
+        </div>
+      </div>
+
+      <img id="imagen-pregunta" class="imagen" style="display:none;">
+
+      <div id="contenedor-opciones" class="cont-opciones" role="list"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+        <div class="info-peq" id="mensaje-espera">Selecciona una opción para ver la explicación. Luego pulsa <strong>Siguiente</strong>.</div>
+        <div>
+          <button class="boton-siguiente oculto" id="boton-siguiente" onclick="siguiente()">Siguiente</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta oculto" id="pantalla-final">
+      <h2>Fin del Quiz</h2>
+      <p id="resultado-final" style="font-size:18px; color:var(--acento-oscuro);"></p>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
+        <button class="boton-principal" onclick="reiniciar()">Volver a jugar</button>
+      </div>
+    </div>
+
+    <div class="tarjeta oculto" id="pantalla-instrucciones" style="max-width:820px;">
+      <h2>Instrucciones</h2>
+      <p>Lee la pregunta y las opciones. Al pulsar una opción se mostrará una explicación breve indicando si era correcta o no. Lee la explicación y cuando estés listo pulsa <strong>Siguiente</strong>.</p>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
+        <button class="boton-principal" onclick="mostrarPantalla('pantalla-portada')">Volver</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+const basePreguntas = [
+  {
+    texto: "¿Quién pintó 'La Escuela de Atenas'?",
+    opciones: ["Leonardo da Vinci","Rafael","Miguel Ángel","Botticelli"],
+    respuesta: 1,
+    imagen: "https://imgur.com/X8Ku3c4.jpg",
+    explicacion: "Rafael Sanzio pintó la obra entre 1509 y 1511."
+  },
+
+  {
+    texto: "¿Dónde se ubican las Estancias de Rafael?",
+    opciones: ["Museo del Prado","Museos Vaticanos","Galería Uffizi","Museo del Louvre"],
+    respuesta: 1,
+    imagen: "https://imgur.com/qRP2T0j.jpg",
+    explicacion: "Forman parte de los Museos Vaticanos en la Ciudad del Vaticano."
+  },
+
+  {
+    texto: "¿Qué dos filósofos ocupan el centro de la composición?",
+    opciones: ["Sócrates y Pitágoras","Platón y Aristóteles","Epicuro y Demócrito","Heráclito y Parménides"],
+    respuesta: 1,
+    imagen: "https://imgur.com/VRa4mwp.jpg",
+    explicacion: "Platón y Aristóteles están en el punto focal de la pintura."
+  },
+
+  {
+    texto: "¿Qué simboliza el gesto de Platón señalando al cielo?",
+    opciones: ["La religión","El mundo de las Ideas","La política","La naturaleza"],
+    respuesta: 1,
+    imagen: "https://imgur.com/Xp2FnL7.jpg",
+    explicacion: "Alude a la teoría platónica del mundo inteligible."
+  },
+
+  {
+    texto: "¿Qué simboliza el gesto de Aristóteles apuntando hacia la tierra?",
+    opciones: ["El empirismo","La poesía","La mitología","La estética"],
+    respuesta: 0,
+    imagen: "https://imgur.com/T5tSMCz.jpg",
+    explicacion: "Representa su énfasis en la experiencia y lo concreto."
+  },
+
+  {
+    texto: "¿Quién se identifica por dibujar con un compás (figura geométrica)?",
+    opciones: ["Euclides","Sócrates","Epicuro","Diógenes"],
+    respuesta: 0,
+    imagen: "https://imgur.com/7H5wbSp.jpg",
+    explicacion: "La figura del compás simboliza la geometría (Euclides)."
+  },
+
+  {
+    texto: "¿Qué filósofo discute activamente en primer plano a la izquierda?",
+    opciones: ["Sócrates","Epicuro","Parménides","Anaximandro"],
+    respuesta: 0,
+    imagen: "https://imgur.com/kJn8zWr.jpg",
+    explicacion: "Sócrates aparece dialogando con gestos acusados."
+  },
+
+  {
+    texto: "¿Qué representa Diógenes en la composición?",
+    opciones: ["Austeridad cínica","Riqueza","Poder político","Teatro"],
+    respuesta: 0,
+    imagen: "https://imgur.com/E51q6IB.jpg",
+    explicacion: "Diógenes simboliza la crítica cínica a las convenciones."
+  },
+
+  {
+    texto: "¿Qué idea se asocia a Pitágoras aquí?",
+    opciones: ["Armonía numérica","Empirismo","Escepticismo","Hedonismo"],
+    respuesta: 0,
+    imagen: "https://imgur.com/osbcCjT.jpg",
+    explicacion: "Pitágoras representa la armonía a través de los números."
+  },
+
+  {
+    texto: "¿Qué figura recuerda a Miguel Ángel y suele identificarse con Heráclito?",
+    opciones: ["La figura pensativa y solitaria","El hombre con corona","El músico","El militar"],
+    respuesta: 0,
+    imagen: "https://imgur.com/wm0M6uj.jpg",
+    explicacion: "Heráclito aparece pensativo con rasgos que recuerdan a Miguel Ángel."
+  }
+];
+
+
+let preguntasSeleccionadas = [];
+let indice = 0;
+let puntaje = 0;
+let respondidaActual = false;
+let respuestasUsuario = [];
+
+function iniciarJuego(){
+  preguntasSeleccionadas = mezclar([...basePreguntas]).slice(0,10);
+  indice = 0;
+  puntaje = 0;
+  respuestasUsuario = [];
+  respondidaActual = false;
+  actualizarBarra();
+  mostrarPregunta();
+  mostrarPantalla('pantalla-juego');
+}
+
+function mezclar(array){
+  for(let i = array.length -1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function mostrarPregunta(){
+  const p = preguntasSeleccionadas[indice];
+
+  let indices = p.opciones.map((_,i)=>i);
+  mezclar(indices);
+  p.indicesDesordenados = indices;
+
+  document.getElementById('texto-pregunta').textContent = p.texto;
+  document.getElementById('contador').textContent =
+    `Pregunta ${indice+1} / ${preguntasSeleccionadas.length} · Puntaje: ${puntaje}`;
+
+  const img = document.getElementById('imagen-pregunta');
+  img.src = p.imagen;
+  img.style.display = 'block';
+
+  const cont = document.getElementById('contenedor-opciones');
+  cont.innerHTML = '';
+
+  indices.forEach((i, pos) => {
+    const btn = document.createElement('button');
+    btn.className = 'boton-opcion';
+    btn.innerHTML = `<span class="letra-op">${String.fromCharCode(65+pos)}</span> ${p.opciones[i]}`;
+    btn.onclick = () => seleccionarOpcion(i, btn);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('boton-siguiente').classList.add('oculto');
+  document.getElementById('mensaje-espera').style.visibility = 'visible';
+  respondidaActual = false;
+}
+
+function seleccionarOpcion(indiceSeleccionado, boton){
+  if(respondidaActual) return;
+
+  respuestasUsuario.push(indiceSeleccionado);
+  const p = preguntasSeleccionadas[indice];
+  const correcto = (indiceSeleccionado === p.respuesta);
+
+  if(correcto) puntaje++;
+
+  const retro = document.createElement('div');
+  retro.style.marginTop = '12px';
+  retro.style.borderRadius = '10px';
+  retro.style.padding = '12px';
+  retro.style.fontSize = '14px';
+
+  if(correcto){
+    retro.className = 'retro-correcto';
+    retro.innerHTML = `<strong>✅ Correcto.</strong> ${p.explicacion}`;
+  } else {
+    retro.className = 'retro-error';
+    retro.innerHTML =
+      `<strong>❌ Incorrecto.</strong> ${p.explicacion}
+      <div style="margin-top:8px; font-size:13px; color:var(--gris)">
+        <strong>Respuesta correcta:</strong> ${p.opciones[p.respuesta]}
+      </div>`;
+  }
+
+  const existente = document.getElementById('retro-temporal');
+  if(existente) existente.remove();
+  retro.id = 'retro-temporal';
+  document.getElementById('pantalla-juego').appendChild(retro);
+
+  document.getElementById('boton-siguiente').classList.remove('oculto');
+  document.getElementById('mensaje-espera').style.visibility = 'hidden';
+  document.getElementById('contador').textContent =
+    `Pregunta ${indice+1} / ${preguntasSeleccionadas.length} · Puntaje: ${puntaje}`;
+
+  respondidaActual = true;
+  actualizarBarra();
+}
+
+function siguiente(){
+  const existente = document.getElementById('retro-temporal');
+  if(existente) existente.remove();
+
+  indice++;
+  if(indice < preguntasSeleccionadas.length){
+    mostrarPregunta();
+  } else {
+    finalizar();
+  }
+}
+
+function actualizarBarra(){
+  const progreso = Math.round(((indice + 1) / preguntasSeleccionadas.length) * 100);
+  document.getElementById('barra').style.width = `${progreso}%`;
+  document.getElementById('avance').textContent = `${progreso}%`;
+}
+
+
+
+function finalizar(){
+  mostrarPantalla('pantalla-final');
+  document.getElementById('resultado-final').innerHTML =
+    `Tu puntuación final es <strong>${puntaje}</strong> de <strong>${preguntasSeleccionadas.length}</strong>.`;
+
+  document.getElementById('barra').style.width = `100%`;
+  document.getElementById('avance').textContent = `100%`;
+}
+
+function reiniciar(){
+  mostrarPantalla('pantalla-portada');
+}
+
+function mostrarPantalla(id){
+  const ids = ['pantalla-portada','pantalla-juego','pantalla-final','pantalla-instrucciones'];
+  ids.forEach(i => {
+    const el = document.getElementById(i);
+    if(i === id) el.classList.remove('oculto');
+    else el.classList.add('oculto');
+  });
+}
+
+function mostrarInstrucciones(){
+  mostrarPantalla('pantalla-instrucciones');
+}
+
+mostrarPantalla('pantalla-portada');
+
+</script>
+</body>
+</html>
